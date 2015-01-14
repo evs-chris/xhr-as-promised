@@ -41,7 +41,7 @@ export default function build(opts) {
     callbacks('onbegin', req, [opts, options]);
 
     if (typeof options === 'string') options = { url: options };
-    req.open(options.method || 'GET', options, true);
+    req.open(options.method || 'GET', options.url, true);
     if (options.credentials) req.withCredentials = true;
 
     for (var k in options.headers) req.setRequestHeader(k, options.headers[k]);
