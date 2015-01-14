@@ -1,0 +1,7 @@
+{
+  "name": "xhr-as-promised",
+  "type": "umd",
+  "version": "0.0.1",
+  "versions": [ "0.0.1" ],
+  "scripts": [ { "file": "xhr-as-promised.js", "target": "index.js" } ]
+}
