@@ -83,7 +83,7 @@
 
       var res = new Promise(function (ok, fail) {
         req.onreadystatechange = function () {
-          if (req.readystate !== 4) return;
+          if (req.readyState !== 4) return;
 
           callbacks("onend", req, [opts, options]);
 
@@ -141,7 +141,7 @@
 
     return xhr;
   }
-  //# sourceMappingURL=05-6to5-index.js.map
+  //# sourceMappingURL=01-6to5-index.js.map
 
   exports['default'] = build;
 
