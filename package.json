@@ -1,0 +1,7 @@
+{
+  "name": "xhr-as-promised",
+  "private": true,
+  "devDependencies": {
+    "gobble": "^0"
+  }
+}
