@@ -48,7 +48,7 @@ export default function build(opts) {
 
     var res = new Promise((ok, fail) => {
       req.onreadystatechange = () => {
-        if (req.readystate !== 4) return;
+        if (req.readyState !== 4) return;
 
         callbacks('onend', req, [opts, options]);
 
