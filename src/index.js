@@ -45,6 +45,11 @@ export default function build(opts) {
     if (options.credentials) req.withCredentials = true;
 
     for (var k in options.headers) req.setRequestHeader(k, options.headers[k]);
+    if (options.method === 'POST' && (!('Content-Type' in options.headers) && !('type' in options))) {
+      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    } else if ('type' in options) {
+      req.setRequestHeader('Content-Type', options.type);
+    }
 
     var res = new Promise((ok, fail) => {
       req.onreadystatechange = () => {
@@ -77,6 +82,7 @@ export default function build(opts) {
       if (typeof options === 'string') options = { url: options };
       var headers = options.headers = options.headers || {};
       headers.Accept = 'application/json';
+      headers['Content-Type'] = 'application/json';
       return xhr(options).then(res => JSON.parse(res.responseText));
     };
     json.get = function get(url) { return json({ url }); };
