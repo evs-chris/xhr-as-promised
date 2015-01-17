@@ -83,6 +83,7 @@ export default function build(opts) {
       var headers = options.headers = options.headers || {};
       headers.Accept = 'application/json';
       headers['Content-Type'] = 'application/json';
+      options.data = JSON.stringify(options.data || '');
       return xhr(options).then(res => JSON.parse(res.responseText));
     };
     json.get = function get(url) { return json({ url }); };
