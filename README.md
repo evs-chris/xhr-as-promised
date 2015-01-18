@@ -30,7 +30,8 @@ This is the function that you will use to make actual requests. It takes an opti
 * `headers` - object - header key/value pairs to set with `setRequestHeader`
 * `onbegin(request)` - a callback function that will be called synchronously just before *this* request is opened
 * `onend(request)` - a callback function that will be called synchronously just before *this* request promise is resolved, even if it is a failure
-* `binary` - boolen - use `sendAsBinary` and if it's not available, return a rejected Promise
+* `binary` - boolean - use `sendAsBinary` and if it's not available, return a rejected Promise
+* `type` - string - what to send as the Content-Type; defaults to `application/json` for the JSON helpers and `application/x-www-form-uriencoded` for everything else
 
 ##### Helpers
 * `xhr.get(url)`
