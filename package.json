@@ -3,5 +3,8 @@
   "private": true,
   "devDependencies": {
     "gobble": "^0"
+  },
+  "scripts": {
+    "build": "scripts/build.sh"
   }
 }
