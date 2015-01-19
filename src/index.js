@@ -35,7 +35,7 @@ function merge() {
   for (var i = 0; i < arguments.length; i++) {
     arg = arguments[i];
     if (typeof arg === 'object') {
-      for (k of arg) {
+      for (k in arg) {
         res[k] = arg[k];
       }
     }
