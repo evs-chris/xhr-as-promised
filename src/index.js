@@ -1,3 +1,5 @@
+/* global XMLHttpRequest, ActiveXObject, window, global */
+
 function XHR() {
   if (window.XMLHttpRequest) return new XMLHttpRequest();
   try { return new ActiveXObject('msxml2.xmlhttp.6.0'); } catch (e) {}
@@ -28,13 +30,28 @@ function callbacks(name, req, targets) {
   }
 }
 
+function merge() {
+  var res = {}, arg, k;
+  for (var i = 0; i < arguments.length; i++) {
+    arg = arguments[i];
+    if (typeof arg === 'object') {
+      for (k of arg) {
+        res[k] = arg[k];
+      }
+    }
+  }
+  return res;
+}
+
 export default function build(opts) {
   var Promise = opts.promise || opts.Promise || (window || {}).Promise || (global || {}).Promise;
 
   if (!Promise) throw new Error('I really need a Promise');
 
-  function xhr(options) {
+  function xhr(options = {}) {
     var req = XHR();
+
+    options.header = options.headers || {};
 
     if (options.binary && !req.sendAsBinary) return Promise.reject(new Error('This browser does not support binary XHRs.'));
 
@@ -50,6 +67,8 @@ export default function build(opts) {
     } else if ('type' in options) {
       req.setRequestHeader('Content-Type', options.type);
     }
+
+    if ('responseType' in options) req.responseType = options.responseType;
 
     var res = new Promise((ok, fail) => {
       req.onreadystatechange = () => {
@@ -71,25 +90,29 @@ export default function build(opts) {
   }
 
   (function() {
-    xhr.get = function get(url) { return xhr(url); };
-    xhr.post = function post(url, data) { return xhr({ method: 'POST', url, data }); };
-    xhr.put = function put(url, data) { return xhr({ method: 'PUT', url, data }); };
-    xhr['delete'] = xhr.del = function del(url, data) { return xhr({ method: 'DELETE', url, data }); };
+    xhr.get = function get(url, opts) { return xhr(merge({ url }, opts)); };
+    xhr.post = function post(url, data, opts) { return xhr(merge({ method: 'POST', url, data }, opts)); };
+    xhr.put = function put(url, data, opts) { return xhr(merge({ method: 'PUT', url, data }, opts)); };
+    xhr['delete'] = xhr.del = function del(url, data, opts) { return xhr(merge({ method: 'DELETE', url, data }, opts)); };
   })();
 
   (function() {
     var json = xhr.json = function json(options = {}) {
       if (typeof options === 'string') options = { url: options };
       var headers = options.headers = options.headers || {};
-      headers.Accept = 'application/json';
-      headers['Content-Type'] = 'application/json';
-      options.data = JSON.stringify(options.data || '');
-      return xhr(options).then(res => JSON.parse(res.responseText));
+      if (!('Accept' in headers)) headers.Accept = 'application/json,*/*';
+      if (!('Content-Type' in headers) && !('type' in options)) headers['Content-Type'] = 'application/json';
+      if (typeof options.data !== 'string') options.data = JSON.stringify(options.data || '');
+      return xhr(options).then(res => {
+        if ((res.getReponseHeader('Content-Type') || '').toLowerCase().indexOf('json') !== -1) {
+          return JSON.parse(res.responseText);
+        } else return res;
+      });
     };
-    json.get = function get(url) { return json({ url }); };
-    json.post = function post(url, data) { return json({ method: 'POST', url, data }); };
-    json.put = function put(url, data) { return json({ method: 'PUT', url, data }); };
-    json['delete'] = json.del = function del(url, data) { return json({ method: 'DELETE', url, data }); };
+    json.get = function get(url, opts) { return json(merge({ url }, opts)); };
+    json.post = function post(url, data, opts) { return json(merge({ method: 'POST', url, data }, opts)); };
+    json.put = function put(url, data, opts) { return json(merge({ method: 'PUT', url, data }, opts)); };
+    json['delete'] = json.del = function del(url, data, opts) { return json(merge({ method: 'DELETE', url, data }, opts)); };
   })();
 
   return xhr;
