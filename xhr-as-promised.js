@@ -21,6 +21,8 @@
     if (superClass) subClass.__proto__ = superClass;
   };
 
+  /* global XMLHttpRequest, ActiveXObject, window, global */
+
   function XHR() {
     if (window.XMLHttpRequest) return new XMLHttpRequest();
     try {
@@ -63,13 +65,29 @@
     }
   }
 
+  function merge() {
+    var res = {}, arg, k;
+    for (var i = 0; i < arguments.length; i++) {
+      arg = arguments[i];
+      if (typeof arg === "object") {
+        for (k in arg) {
+          res[k] = arg[k];
+        }
+      }
+    }
+    return res;
+  }
+
   function build(opts) {
     var Promise = opts.promise || opts.Promise || (window || {}).Promise || (global || {}).Promise;
 
     if (!Promise) throw new Error("I really need a Promise");
 
-    function xhr(options) {
+    function xhr() {
+      var options = arguments[0] === undefined ? {} : arguments[0];
       var req = XHR();
+
+      options.header = options.headers || {};
 
       if (options.binary && !req.sendAsBinary) return Promise.reject(new Error("This browser does not support binary XHRs."));
 
@@ -85,6 +103,8 @@
       } else if ("type" in options) {
         req.setRequestHeader("Content-Type", options.type);
       }
+
+      if ("responseType" in options) req.responseType = options.responseType;
 
       var res = new Promise(function (ok, fail) {
         req.onreadystatechange = function () {
@@ -106,17 +126,17 @@
     }
 
     (function () {
-      xhr.get = function get(url) {
-        return xhr(url);
+      xhr.get = function get(url, opts) {
+        return xhr(merge({ url: url }, opts));
       };
-      xhr.post = function post(url, data) {
-        return xhr({ method: "POST", url: url, data: data });
+      xhr.post = function post(url, data, opts) {
+        return xhr(merge({ method: "POST", url: url, data: data }, opts));
       };
-      xhr.put = function put(url, data) {
-        return xhr({ method: "PUT", url: url, data: data });
+      xhr.put = function put(url, data, opts) {
+        return xhr(merge({ method: "PUT", url: url, data: data }, opts));
       };
-      xhr["delete"] = xhr.del = function del(url, data) {
-        return xhr({ method: "DELETE", url: url, data: data });
+      xhr["delete"] = xhr.del = function del(url, data, opts) {
+        return xhr(merge({ method: "DELETE", url: url, data: data }, opts));
       };
     })();
 
@@ -125,24 +145,26 @@
         var options = arguments[0] === undefined ? {} : arguments[0];
         if (typeof options === "string") options = { url: options };
         var headers = options.headers = options.headers || {};
-        headers.Accept = "application/json";
-        headers["Content-Type"] = "application/json";
-        options.data = JSON.stringify(options.data || "");
+        if (!("Accept" in headers)) headers.Accept = "application/json,*/*";
+        if (!("Content-Type" in headers) && !("type" in options)) headers["Content-Type"] = "application/json";
+        if (typeof options.data !== "string") options.data = JSON.stringify(options.data || "");
         return xhr(options).then(function (res) {
-          return JSON.parse(res.responseText);
+          if ((res.getResponseHeader("Content-Type") || "").toLowerCase().indexOf("json") !== -1) {
+            return JSON.parse(res.responseText);
+          } else return res;
         });
       };
-      json.get = function get(url) {
-        return json({ url: url });
+      json.get = function get(url, opts) {
+        return json(merge({ url: url }, opts));
       };
-      json.post = function post(url, data) {
-        return json({ method: "POST", url: url, data: data });
+      json.post = function post(url, data, opts) {
+        return json(merge({ method: "POST", url: url, data: data }, opts));
       };
-      json.put = function put(url, data) {
-        return json({ method: "PUT", url: url, data: data });
+      json.put = function put(url, data, opts) {
+        return json(merge({ method: "PUT", url: url, data: data }, opts));
       };
-      json["delete"] = json.del = function del(url, data) {
-        return json({ method: "DELETE", url: url, data: data });
+      json["delete"] = json.del = function del(url, data, opts) {
+        return json(merge({ method: "DELETE", url: url, data: data }, opts));
       };
     })();
 
