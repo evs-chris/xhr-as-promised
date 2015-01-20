@@ -1,3 +1,8 @@
+## 0.1.0
+
+* More flexible option handling, including support for `responseType` and options for each helper.
+* __BUG?:__ JSON helpers only parse the JSON if the response `Content-Type` contains `'json'`.
+
 ## 0.0.4
 
 * __BUG?:__ JSON helpers now expect objects instead of pre-strinified JSON.
