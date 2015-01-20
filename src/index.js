@@ -104,7 +104,7 @@ export default function build(opts) {
       if (!('Content-Type' in headers) && !('type' in options)) headers['Content-Type'] = 'application/json';
       if (typeof options.data !== 'string') options.data = JSON.stringify(options.data || '');
       return xhr(options).then(res => {
-        if ((res.getReponseHeader('Content-Type') || '').toLowerCase().indexOf('json') !== -1) {
+        if ((res.getResponseHeader('Content-Type') || '').toLowerCase().indexOf('json') !== -1) {
           return JSON.parse(res.responseText);
         } else return res;
       });
