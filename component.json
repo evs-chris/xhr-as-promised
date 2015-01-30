@@ -1,6 +1,6 @@
 {
   "name": "xhr-as-promised",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": "evs-chris/xhr-as-promised",
   "description": "Normalized XHRs with a promisified interface and a JSON request helper",
   "scripts": ["component/index.js"],

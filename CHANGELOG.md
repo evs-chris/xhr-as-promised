@@ -1,3 +1,7 @@
+## 0.1.1
+
+* __BUG:__ Fixes typo that caused an exception trying to come up with a content type for posts that lack headers.
+
 ## 0.1.0
 
 * More flexible option handling, including support for `responseType` and options for each helper.
