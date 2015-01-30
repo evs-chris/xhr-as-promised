@@ -87,7 +87,7 @@
       var options = arguments[0] === undefined ? {} : arguments[0];
       var req = XHR();
 
-      options.header = options.headers || {};
+      options.headers = options.headers || {};
 
       if (options.binary && !req.sendAsBinary) return Promise.reject(new Error("This browser does not support binary XHRs."));
 
