@@ -78,6 +78,9 @@
     return res;
   }
 
+  var betweenQueryAndHash = /\?[^#]*#/;
+  var afterQuery = /\?.*/;
+
   function build(opts) {
     var Promise = opts.promise || opts.Promise || (window || {}).Promise || (global || {}).Promise;
 
@@ -94,11 +97,33 @@
       callbacks("onbegin", req, [opts, options]);
 
       if (typeof options === "string") options = { url: options };
+
+      if (options.query && typeof options.query === "object") {
+        var qs = "";
+        for (var k in options.query) {
+          qs += (qs ? "&" : "") + ("" + encodeURIComponent(k) + "=" + encodeURIComponent(options.query[k]));
+        }
+
+        var hash = options.url.indexOf("#") !== -1,
+            query = options.url.indexOf("?") !== -1;
+
+        if (hash && query) {
+          options.url = options.url.replace(betweenQueryAndHash, "?" + qs + "#");
+        } else if (hash) {
+          options.url = options.url.replace("#", "?" + qs + "#");
+        } else if (query) {
+          options.url = options.url.replace(afterQuery, "?" + qs);
+        } else {
+          options.url += "?" + qs;
+        }
+      }
+
       req.open(options.method || "GET", options.url, true);
       if (options.credentials) req.withCredentials = true;
 
-      for (var k in options.headers) req.setRequestHeader(k, options.headers[k]);
-      if (options.method === "POST" && (!("Content-Type" in options.headers) && !("type" in options))) {
+      for (var k in options.headers) {
+        req.setRequestHeader(k, options.headers[k]);
+      }if (options.method === "POST" && (!("Content-Type" in options.headers) && !("type" in options))) {
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       } else if ("type" in options) {
         req.setRequestHeader("Content-Type", options.type);
