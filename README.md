@@ -32,21 +32,22 @@ This is the function that you will use to make actual requests. It takes an opti
 * `onend(request)` - a callback function that will be called synchronously just before *this* request promise is resolved, even if it is a failure
 * `binary` - boolean - use `sendAsBinary` and if it's not available, return a rejected Promise
 * `type` - string - what to send as the Content-Type; defaults to `application/json` for the JSON helpers and `application/x-www-form-uriencoded` for everything else
+* `query` - object - key/value pairs to turn into a query string and insert into the url before connecting
 
 ##### Helpers
-* `xhr.get(url)`
-* `xhr.post(url, data)`
-* `xhr.put(url, data)`
-* `xhr.delete(url, data)` - alias `xhr.del(url, data)` - thanks IE8
+* `xhr.get(url, [options])`
+* `xhr.post(url, data, [options])`
+* `xhr.put(url, data, [options])`
+* `xhr.delete(url, data, [options])` - alias `xhr.del(url, data)` - thanks IE8
 
 ##### JSON Helpers
 These functions all set the `Accept` header to `application/json` and return a Promise that resolves to the returned object.
 
 * `xhr.json(options)` - JSON version of `xhr(options)`
-* `xhr.json.get(url)`
-* `xhr.json.post(url, data)`
-* `xhr.json.put(url, data)`
-* `xhr.json.delete(url, data)` - alias `xhr.json.del(url, data)`
+* `xhr.json.get(url, [options])`
+* `xhr.json.post(url, data, [options])`
+* `xhr.json.put(url, data, [options])`
+* `xhr.json.delete(url, data, [options])` - alias `xhr.json.del(url, data)`
 
 ## License
 Copyright (c) 2014 Chris Reeves. Released under an [MIT license](https://github.com/evs-chris/xhr-as-promised/blob/master/LICENSE.md).

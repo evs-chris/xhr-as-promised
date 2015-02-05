@@ -1,3 +1,7 @@
+## 0.2.0
+
+* There is now a `query` request option to make building a query string from an object a little easier.
+
 ## 0.1.1
 
 * __BUG:__ Fixes typo that caused an exception trying to come up with a content type for posts that lack headers.
