@@ -1,3 +1,7 @@
+## 0.2.1
+
+* __BUG:__ The query string will now only allow booleans, strings, and numbers. Any other values will be skipped.
+
 ## 0.2.0
 
 * There is now a `query` request option to make building a query string from an object a little easier.
