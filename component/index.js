@@ -97,7 +97,10 @@ function build(opts) {
     if (options.query && typeof options.query === "object") {
       var qs = "";
       for (var k in options.query) {
-        qs += (qs ? "&" : "") + ("" + encodeURIComponent(k) + "=" + encodeURIComponent(options.query[k]));
+        var v = options.query[k];
+        if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
+          qs += (qs ? "&" : "") + ("" + encodeURIComponent(k) + "=" + encodeURIComponent(v));
+        }
       }
 
       var hash = options.url.indexOf("#") !== -1,
