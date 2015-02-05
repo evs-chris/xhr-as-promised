@@ -65,7 +65,10 @@ export default function build(opts) {
     if (options.query && typeof options.query === 'object') {
       let qs = '';
       for (let k in options.query) {
-        qs += (qs ? '&' : '') + `${encodeURIComponent(k)}=${encodeURIComponent(options.query[k])}`;
+        let v = options.query[k];
+        if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+          qs += (qs ? '&' : '') + `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
+        }
       }
 
       let hash = options.url.indexOf('#') !== -1,
