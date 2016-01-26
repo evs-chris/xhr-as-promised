@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Make any available response headers available on the error object as `responseHeaders` for failed requests.
+
 ## 0.2.1
 
 * __BUG:__ The query string will now only allow booleans, strings, and numbers. Any other values will be skipped.
