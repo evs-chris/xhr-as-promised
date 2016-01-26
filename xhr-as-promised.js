@@ -6,26 +6,17 @@
 
   "use strict";
 
-  var _inherits = function (subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) subClass.__proto__ = superClass;
-  };
+  var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
+  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+  var index = build;
   /* global XMLHttpRequest, ActiveXObject, window, global */
 
   function XHR() {
-    if (window.XMLHttpRequest) return new XMLHttpRequest();
-    try {
+    if (window.XMLHttpRequest) {
+      return new XMLHttpRequest();
+    }try {
       return new ActiveXObject("msxml2.xmlhttp.6.0");
     } catch (e) {}
     try {
@@ -38,8 +29,9 @@
 
   function contains(array, value) {
     var i = array.length;
-    while (i--) if (array[i] === value) return true;
-    return false;
+    while (i--) if (array[i] === value) {
+      return true;
+    }return false;
   }
 
   var okStatus = [200, 304, 0];
@@ -49,9 +41,12 @@
 
   var XHRError = (function (Error) {
     function XHRError(message, status, request) {
+      _classCallCheck(this, XHRError);
+
       this.message = message;
       this.status = status;
       this.request = request;
+      this.responseHeaders = request.responseHeaders;
     }
 
     _inherits(XHRError, Error);
@@ -66,7 +61,9 @@
   }
 
   function merge() {
-    var res = {}, arg, k;
+    var res = {},
+        arg,
+        k;
     for (var i = 0; i < arguments.length; i++) {
       arg = arguments[i];
       if (typeof arg === "object") {
@@ -79,9 +76,7 @@
   }
 
   var betweenQueryAndHash = /\?[^#]*#/;
-  var afterQuery = /\?.*/;
-
-  function build(opts) {
+  var afterQuery = /\?.*/;function build(opts) {
     var Promise = opts.promise || opts.Promise || (window || {}).Promise || (global || {}).Promise;
 
     if (!Promise) throw new Error("I really need a Promise");
@@ -92,9 +87,9 @@
 
       options.headers = options.headers || {};
 
-      if (options.binary && !req.sendAsBinary) return Promise.reject(new Error("This browser does not support binary XHRs."));
-
-      callbacks("onbegin", req, [opts, options]);
+      if (options.binary && !req.sendAsBinary) {
+        return Promise.reject(new Error("This browser does not support binary XHRs."));
+      }callbacks("onbegin", req, [opts, options]);
 
       if (typeof options === "string") options = { url: options };
 
@@ -143,6 +138,17 @@
           if (requestOk(req)) {
             ok(req);
           } else {
+            var _res = req.responseHeaders = {};
+            if (typeof req.getAllResponseHeaders === "function") {
+              var headers = req.getAllResponseHeaders().split("\n");
+              for (var i = 0; i < headers.length; i++) {
+                var n = headers[i].substr(0, headers[i].indexOf(":"));
+                if (!n) continue;
+                var v = headers[i].substr(n.length + 1);
+                _res[n] = v;
+                _res[n.toLowerCase()] = v;
+              }
+            }
             fail(new XHRError("Server responded with a status of " + req.status, req.status, req));
           }
         };
@@ -198,9 +204,8 @@
 
     return xhr;
   }
-  //# sourceMappingURL=01-6to5-index.js.map
 
-  exports['default'] = build;
+  exports['default'] = index;
 
 }));
-//# sourceMappingURL=./xhr-as-promised.js.map
+//# sourceMappingURL=xhr-as-promised.js.map
