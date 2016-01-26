@@ -21,6 +21,7 @@ class XHRError extends Error {
     this.message = message;
     this.status = status;
     this.request = request;
+    this.responseHeaders = request.responseHeaders;
   }
 }
 
@@ -106,6 +107,17 @@ export default function build(opts) {
         if (requestOk(req)) {
           ok(req);
         } else {
+          let res = req.responseHeaders = {};
+          if (typeof req.getAllResponseHeaders === 'function') {
+            let headers = req.getAllResponseHeaders().split('\n');
+            for (let i = 0; i < headers.length; i++) {
+              let n = headers[i].substr(0, headers[i].indexOf(':'));
+              if (!n) continue;
+              let v = headers[i].substr(n.length + 1);
+              res[n] = v;
+              res[n.toLowerCase()] = v;
+            }
+          }
           fail(new XHRError('Server responded with a status of ' + req.status, req.status, req));
         }
       };
